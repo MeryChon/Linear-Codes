@@ -5,8 +5,9 @@ class Matrix:
         self.num_rows = int(rows)
         self.num_columns = int(columns)
         self.matrix = self.create_matrix(data)
+        self.column_order = [i for i in range(1, self.num_columns+1)]
         self.gauss_jordan()
-        # print(self.matrix)
+        print(self.column_order)
 
     @staticmethod
     def create_matrix(data):
@@ -28,18 +29,33 @@ class Matrix:
         for i in range(row_num+1, self.num_rows):
             if self.matrix[i][pivot_index] != 0:
                 self.subtract_rows(i, row_num)
-            self.print_matrix(self.matrix)
+        self.print_matrix(self.matrix)
+
+    def swap_columns(self, first, second):
+        for i in range(self.num_rows):
+            # tmp = self.matrix[first][i]
+            # self.matrix[first][i] = self.matrix[second][i]
+            # self.matrix[second][i] = tmp
+            self.matrix[i][first], self.matrix[i][second] = self.matrix[i][second], self.matrix[i][first]
+        # tmp = self.column_order[first]
+        # self.column_order[first] = second
+        # self.column_order[second] = tmp
+        self.column_order[first], self.column_order[second] = self.column_order[second], self.column_order[first]
 
     def gauss_jordan(self):
         pivot_index = -1
+        self.print_matrix(self.matrix)
         for i in range(self.num_rows):
             pivot_index += 1
-            # pivot = -1
-            for j in range(self.num_columns):
-                if self.matrix[i][j] != 0:
-                    pivot_index = j
-                    # pivot = self.matrix[i][j]
-                    break
+            if self.matrix[i][i] == 0:
+                for j in range(self.num_columns):
+                    if self.matrix[i][j] != 0:
+                        self.swap_columns(i, j)
+                        print("========== Exchange of columns ========")
+                        print(self.column_order)
+                        print()
+                        self.print_matrix(self.matrix)
+                        break
             self.subtract_from_lower_rows(i, pivot_index)
 
     @staticmethod
