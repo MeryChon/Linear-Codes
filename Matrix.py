@@ -6,7 +6,7 @@ class Matrix:
         self.num_columns = int(columns)
         self.matrix = self.create_matrix(data)
         self.column_order = [i for i in range(1, self.num_columns+1)]
-        self.gauss_jordan()
+        # self.gauss_jordan()
 
     def get_matrix(self):
         return self.matrix
@@ -48,6 +48,54 @@ class Matrix:
                         self.swap_columns(i, j)
                         break
             self.subtract_from_other_rows(i, pivot_index)
+
+    @staticmethod
+    def transpose(matrix):
+        transposed = []
+        for i in range(len(matrix[0])):
+            transposed.append([])
+        for cn in range(len(matrix[0])):
+            for rn in range(len(matrix)):
+                transposed[cn].append(matrix[rn][cn])
+        return transposed
+
+    # Returns the A part of G = [I A] matrix
+    def get_A(self):
+        res = []
+        for rn in range(self.num_rows):
+            res.append([])
+            for cn in range(self.num_rows, self.num_columns):
+                res[rn].append(self.matrix[rn][cn])
+        return res
+
+    # Should only be called after calling gauss - jordan;
+    # Returns P = [A I]
+    def get_parity_check_matrix(self):
+        a = self.get_A()
+        a_transposed = self.transpose(a)
+        identity_matrix = self.make_identity_matrix(len(a_transposed))
+        res = self.build_horizontally(a_transposed, identity_matrix)
+        return res
+
+    @staticmethod
+    def build_horizontally(m1, m2):
+        res = []
+        for i in range(len(m1)):
+            res.append([])
+            res[i] += [val for val in m1[i] + m2[i]]
+        return res
+
+    @staticmethod
+    def make_identity_matrix(size):
+        identity_m = []
+        for rn in range(size):
+            identity_m.append([])
+            for cn in range(size):
+                if cn == rn:
+                    identity_m[rn].append(1)
+                else:
+                    identity_m[rn].append(0)
+        return identity_m
 
     @staticmethod
     def print_matrix(matrix):
