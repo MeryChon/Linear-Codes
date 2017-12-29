@@ -22,7 +22,6 @@ class Matrix:
         for i in range(self.num_rows):
             if i != pivot_index and self.matrix[i][pivot_index] != 0:
                 self.subtract_rows(i, pivot_index)
-        # self.print_matrix(self.matrix)
 
     def swap_columns(self, first, second):
         for i in range(self.num_rows):
@@ -63,7 +62,6 @@ class Matrix:
     def get_parity_check_matrix(self):
         self.standardize()
         a = self.get_A()
-        self.print_matrix(a)
         a_transposed = self.transpose(a)
         identity_matrix = self.make_identity_matrix(len(a_transposed))
         res = self.build_horizontally(a_transposed, identity_matrix)
@@ -93,9 +91,13 @@ class Matrix:
         arr1 = np.array(m1)
         arr2 = np.array(m2)
         res = np.dot(arr1, arr2).tolist()
-        for i in range(len(res)):
-            for j in range(len(res[0])):
-                res[i][j] = res[i][j] % num
+        if isinstance(res[0], int):
+            for i in range(len(res)):
+                res[i] = res[i]%2
+        else:
+            for i in range(len(res)):
+                for j in range(len(res[0])):
+                    res[i][j] = res[i][j] % num
         return res
 
     @staticmethod
