@@ -1,12 +1,11 @@
-
+import numpy as np
 
 class Matrix:
     def __init__(self, rows, columns, data):
         self.num_rows = int(rows)
         self.num_columns = int(columns)
-        self.matrix = self.create_matrix(data)
+        self.matrix = self.create_matrix(data[:self.num_rows])
         self.column_order = [i for i in range(1, self.num_columns+1)]
-        # self.gauss_jordan()
 
     def get_matrix(self):
         return self.matrix
@@ -14,40 +13,31 @@ class Matrix:
     def get_column_order(self):
         return self.column_order
 
-    @staticmethod
-    def create_matrix(data):
-        matrix = []
-        for r in range(len(data)):
-            matrix.append([])
-            for i in range(len(data[r])):
-                matrix[r].append(int(data[r][i]))
-        return matrix
-
     def subtract_rows(self, from_index, to_subtr_index):
         to_subtr = self.matrix[to_subtr_index]
         for i in range(self.num_columns):
             self.matrix[from_index][i] = self.matrix[from_index][i] ^ to_subtr[i]
 
-    def subtract_from_other_rows(self, row_num, pivot_index):
+    def subtract_from_other_rows(self, pivot_index):
         for i in range(self.num_rows):
-            if i != row_num and self.matrix[i][pivot_index] != 0:
-                self.subtract_rows(i, row_num)
+            if i != pivot_index and self.matrix[i][pivot_index] != 0:
+                self.subtract_rows(i, pivot_index)
+        # self.print_matrix(self.matrix)
 
     def swap_columns(self, first, second):
         for i in range(self.num_rows):
             self.matrix[i][first], self.matrix[i][second] = self.matrix[i][second], self.matrix[i][first]
         self.column_order[first], self.column_order[second] = self.column_order[second], self.column_order[first]
 
-    def gauss_jordan(self):
-        pivot_index = -1
+    # TODO: change name to standardize()
+    def standardize(self):
         for i in range(self.num_rows):
-            pivot_index += 1
             if self.matrix[i][i] == 0:
                 for j in range(self.num_columns):
                     if self.matrix[i][j] != 0:
                         self.swap_columns(i, j)
                         break
-            self.subtract_from_other_rows(i, pivot_index)
+            self.subtract_from_other_rows(i)
 
     @staticmethod
     def transpose(matrix):
@@ -69,13 +59,53 @@ class Matrix:
         return res
 
     # Should only be called after calling gauss - jordan;
-    # Returns P = [A I]
+    # Returns P = [-At I]
     def get_parity_check_matrix(self):
+        self.standardize()
         a = self.get_A()
+        self.print_matrix(a)
         a_transposed = self.transpose(a)
         identity_matrix = self.make_identity_matrix(len(a_transposed))
         res = self.build_horizontally(a_transposed, identity_matrix)
+        for i in range(self.num_columns):
+            if self.column_order[i] != i+1:
+                self.swap_columns(i, self.column_order[i]-1)
         return res
+
+    def return_original_column_order(self):
+        for i in range(self.num_columns):
+            if self.column_order[i] != i+1:
+                self.swap_columns(i, self.column_order[i]-1)
+
+    def convert_to_modulo(self, num):
+        for i in range(self.num_rows):
+            for j in range(self.num_columns):
+                self.matrix[i][j] = self.matrix[i][j]%num
+
+    def print_self_matrix(self):
+        print()
+        for r in self.matrix:
+            print(r)
+        print()
+
+    @staticmethod
+    def dot_product(m1, m2, num):
+        arr1 = np.array(m1)
+        arr2 = np.array(m2)
+        res = np.dot(arr1, arr2).tolist()
+        for i in range(len(res)):
+            for j in range(len(res[0])):
+                res[i][j] = res[i][j] % num
+        return res
+
+    @staticmethod
+    def create_matrix(data):
+        matrix = []
+        for r in range(len(data)):
+            matrix.append([])
+            for i in range(len(data[r])):
+                matrix[r].append(int(data[r][i]))
+        return matrix
 
     @staticmethod
     def build_horizontally(m1, m2):
