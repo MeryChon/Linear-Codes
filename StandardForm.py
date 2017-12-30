@@ -53,7 +53,6 @@ if __name__ == '__main__':
     data = read_from_file(infile_name)
     matrix = Matrix(data[1], data[0], data[2:])
     matrix.standardize()
-    # matrix.print_matrix(matrix.get_matrix())
     write_to_file(outfile_name, matrix.get_matrix(), matrix.get_column_order())
     # check_file = sys.argv[3]
     # check_answer(outfile_name, check_file)

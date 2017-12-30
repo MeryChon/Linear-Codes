@@ -13,6 +13,12 @@ class Matrix:
     def get_column_order(self):
         return self.column_order
 
+    def get_num_rows(self):
+        return self.num_rows
+
+    def get_num_columns(self):
+        return self.num_columns
+
     def subtract_rows(self, from_index, to_subtr_index):
         to_subtr = self.matrix[to_subtr_index]
         for i in range(self.num_columns):
@@ -65,10 +71,12 @@ class Matrix:
         a_transposed = self.transpose(a)
         identity_matrix = self.make_identity_matrix(len(a_transposed))
         res = self.build_horizontally(a_transposed, identity_matrix)
-        for i in range(self.num_columns):
-            if self.column_order[i] != i+1:
-                self.swap_columns(i, self.column_order[i]-1)
-        return res
+        swapped_matrix = [[0] * len(res[0]) for i in range(len(res))]
+        for i in range(len(res)):
+            for j in range(len(res[0])):
+                index = self.column_order.index(j+1)
+                swapped_matrix[i][j] = res[i][index]
+        return swapped_matrix
 
     def return_original_column_order(self):
         for i in range(self.num_columns):

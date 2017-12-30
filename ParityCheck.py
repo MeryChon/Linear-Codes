@@ -49,7 +49,7 @@ def check_answer(res_file, in_file):
 if __name__ == '__main__':
     in_file = sys.argv[1]
     out_file = sys.argv[2]
-    check_file = sys.argv[3]
+    # check_file = sys.argv[3]
     data = read_from_file(in_file)
 
     m = Matrix(data[1], data[0], data[2:])
