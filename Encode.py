@@ -35,7 +35,7 @@ if __name__ == '__main__':
     info_file = sys.argv[2]
     output_file = sys.argv[3]
 
-    gen_info = read_from_generator_file(generator_file)  # დატესტილია
+    gen_info = read_from_generator_file(generator_file)
     generator_obj = Matrix(gen_info[1], gen_info[0], gen_info[2:])
 
     bits = str(SimpleRead.bytesToBits(SimpleRead.readBytesFromFile(info_file)))[10:-2]
