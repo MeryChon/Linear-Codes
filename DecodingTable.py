@@ -41,12 +41,31 @@ def get_syndromes(error_vects, parity_check_m):
     errors_transposed = Matrix.transpose(error_vects)
     return Matrix.dot_product(parity_check_m, errors_transposed, 2)
 
+
 def map_syndromes_with_errors(syndromes, errors) :
     res_map = {}
     for si in range(len(syndromes)):
-        # TODO: improve key/value types
-        res_map[str(syndromes[si])] = errors[si]
+        key = "".join(str(b) for b in syndromes[si])
+        res_map[key] = errors[si]
     return res_map
+
+
+def write_to_file(output_file, parity_check_matrix, syndromes_map):
+    file_obj = open(output_file, 'w')
+
+    num_rows = len(parity_check_matrix)
+    num_cols = len(parity_check_matrix[0])
+    to_write = str(num_cols) + " " + str(num_rows) + "\n"
+    for r in parity_check_matrix:
+        for i in r:
+            to_write += str(i)
+        to_write += "\n"
+
+    for synd in syndromes_map:
+        to_write += synd + " " + "".join(str(eb) for eb in syndromes_map[synd]) + "\n"
+
+    file_obj.write(to_write)
+    file_obj.close()
 
 
 if __name__ == '__main__':
@@ -57,20 +76,15 @@ if __name__ == '__main__':
     gen_info = read_from_generator_file(generator_file)
     generator_obj = Matrix(gen_info[1], gen_info[0], gen_info[2:])
     parity_matrix = generator_obj.get_parity_check_matrix()
-    Matrix.print_matrix(parity_matrix)
 
     num = read_num(num_file)
 
     error_vectors = get_error_vectors(num, parity_matrix)
-    Matrix.print_matrix(error_vectors)
 
     syndromes = get_syndromes(error_vectors, parity_matrix)
-    Matrix.print_matrix(syndromes)
 
     syndrome_map = map_syndromes_with_errors(Matrix.transpose(syndromes), error_vectors)
-    for s in syndrome_map:
-        print(s, " : ", syndrome_map[s])
 
-    # TODO: write to file;
+    write_to_file(out_file, parity_matrix, syndrome_map)
 
 
